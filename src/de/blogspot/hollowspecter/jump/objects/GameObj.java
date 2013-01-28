@@ -16,15 +16,9 @@ public class GameObj {
 	private float prevPosY;
 	private float startPosX;
 	private float startPosY;
-	private float spdX;
+	protected float spdX;
 	protected float spdY;
 	protected String imgPath;
-	
-	//modifyer
-	
-	//"collision box"
-	protected float xMin, xMax, yMin, yMax = 0;
-	protected AABB box;
 	
 	//gravity
 	protected float mass;
@@ -49,13 +43,6 @@ public class GameObj {
 	public void init(GameContainer container) throws SlickException
 	{
 			img = new Image(imgPath);
-			xMin = posX - (img.getWidth() / 2);
-			xMax = posX + (img.getWidth() / 2);
-			yMin = posY - (img.getHeight() / 2);
-			yMax = posY + (img.getHeight() / 2);
-		
-		//box initialiseren xmin xmax ymin ymax
-		box = new AABB(xMin, xMax, yMin, yMax);
 	}
 	
 	public void update(GameContainer container, int delta) throws SlickException
@@ -79,26 +66,11 @@ public class GameObj {
 		// make it move via delta
 		posX += spdX * _delta;
 		posY += spdY * _delta;
-		
-		//update box around the image:
-		box.update(xMin, xMax, yMin, yMax);
 	}
 	
 	public void render(GameContainer container, Graphics g) throws SlickException
 	{
 			img.drawCentered(posX, posY);
-	}
-	
-	// andere Methoden
-	
-	public boolean intersectsWith(GameObj obj)
-	{
-		return Collision.intersect(this.box, obj.box, this.spdX-obj.spdX, this.spdY-obj.spdY, 1.0f, 0.0f);
-	}
-	
-	public boolean intersectsWith(AABB box)
-	{
-		return Collision.intersect(this.box, box, this.spdX, this.spdY, 1.0f, 0.0f);
 	}
 	
 	// Generierte Getter und Setter

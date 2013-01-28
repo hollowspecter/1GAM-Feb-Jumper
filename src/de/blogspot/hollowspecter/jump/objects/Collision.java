@@ -43,15 +43,23 @@ public class Collision {
 		tLeave = 1.0f;
 		
 		// X-Axis
-		if (intersectAxis(box1.xMin, box1.xMax, box2.xMin, box2.xMax, spdX, tEnter, tLeave))
+		if (intersectAxis(	box1.posX,
+							box1.posX + box1.width,
+							box2.posX,
+							box2.posX + box2.width,
+							spdX, tEnter, tLeave))
 			return false;
 		
 		// Y-Axis
-		else if (intersectAxis(box1.yMin, box1.yMax, box2.yMin, box2.yMax, spdY, tEnter, tLeave))
+		else if (intersectAxis(	box1.getPosY(),
+								box1.getPosY() + box1.getHeight(),
+								box2.getPosY(),
+								box2.getPosY() + box2.getHeight(),
+								spdX, tEnter, tLeave))
 			return false;
 		
 		else
-			return true;
+			return false;
 	}
 	
 	/*

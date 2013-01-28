@@ -18,7 +18,7 @@
  </layer>
  <layer name="Boden" width="60" height="15">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3DsQ0AAAgDoPr/0x7RTSEhAQCAzjwJ1yz2YGElEA4AAA==
+   H4sIAAAAAAAAC+3NsQkAAAjAMP3/aS9wEhQhgc6NAACAmVzq8t394bMCzdiZGhAOAAA=
   </data>
  </layer>
  <layer name="Kollision" width="60" height="15">
@@ -26,7 +26,7 @@
    <property name="collision" value="true"/>
   </properties>
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+3DsQkAAAgDsIL//+wR3TSBJAAA0Jkn4ZoFrXtqmhAOAAA=
+   H4sIAAAAAAAAC+3NsQkAAAjAMMH/f/YCJ0EREujcCAAAmMmlLt/dHz4r4LNj2hAOAAA=
   </data>
  </layer>
 </map>
