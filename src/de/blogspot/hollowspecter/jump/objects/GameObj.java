@@ -12,10 +12,9 @@ public class GameObj {
 	protected Image img;
 	protected float posX;
 	protected float posY;
-	private float prevPosX;
+	protected float prevPosX;
 	private float prevPosY;
-	private float startPosX;
-	private float startPosY;
+	private float startPosX, startPosY, startSpdX, startSpdY;
 	protected float spdX;
 	protected float spdY;
 	protected String imgPath;
@@ -33,6 +32,8 @@ public class GameObj {
 				
 		setStartPosX(posX);
 		setStartPosY(posY);
+		startSpdX = spdX;
+		startSpdY = spdY;
 		
 		this.mass = mass;
 		apply_gravity = false;
@@ -71,6 +72,13 @@ public class GameObj {
 	public void render(GameContainer container, Graphics g) throws SlickException
 	{
 			img.drawCentered(posX, posY);
+	}
+	
+	public void resetLocation() {
+		posX = startPosX;
+		posY = startPosY;
+		spdX = startSpdX;
+		spdY = startSpdY;
 	}
 	
 	// Generierte Getter und Setter

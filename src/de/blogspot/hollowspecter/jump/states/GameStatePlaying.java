@@ -29,6 +29,7 @@ public class GameStatePlaying extends BasicGameState {
 	@Override
 	public void init(GameContainer container, StateBasedGame state) throws SlickException
 	{	
+		
 		player1 = new Player(50, 200, paths.IMG_PLAYER_ANIMATION);		
 		player1.init(container);
 		testmap = new Testmap();
@@ -40,17 +41,23 @@ public class GameStatePlaying extends BasicGameState {
 	{
     	player1.update(container, delta);
     	collision(container, delta);
+    	if (player1.getPosY() > 500)
+    		reset();
 	}
 	
     @Override
 	public void render(GameContainer container, StateBasedGame state, Graphics g) throws SlickException
 	{    	
-    	g.translate(-player1.getPosX()+100, 0);
+    	if ((player1.getPosX()+540) < testmap.getMapwidth())
+    		g.translate(-player1.getPosX()+100, 0);
+    	else
+    		g.translate(-1*(testmap.getMapwidth()-640),0);
     	testmap.render(container, g);
     	player1.render(container, g);
     	
     	//Debug HUD
     	HUD(container, g);
+    	fuelBar(container, g);
 	}
 	
 
@@ -76,19 +83,39 @@ public class GameStatePlaying extends BasicGameState {
 	{
 		hud_string = "Collision: FALSE";
 		player1.setState(Constants.PLAYER_air);
+		boolean dmg_coll = false;
 		
     	for (Shape box : testmap.getList()) {
     		if (player1.checkCollisionWith(box))
     		{
     			hud_string = "Collision: TRUE";
-    			
-    			//if the feet hit the ground
-    			
-    			player1.setState(Constants.PLAYER_ground);
-    			player1.setPosY(box.getY()-32);
-    			player1.setSpdY(0);
+    			dmg_coll = true;
+
+    			//only if feet hit the ground!
+    			for (Shape box2 : testmap.getBoxAbove()) {
+    				if (player1.checkCollisionWith(player1.getFeet_box(), box2)) {
+    					player1.setState(Constants.PLAYER_ground);
+    	    			player1.setPosY(box.getY()-32);
+    	    			player1.setSpdY(0);
+    	    			dmg_coll = false;
+    				}
+    			}
     		}
     	}
-
+    	
+    	if (dmg_coll)
+    		reset();
+	}
+	
+	public void fuelBar(GameContainer container, Graphics g) throws SlickException
+	{
+		g.setColor(Color.red);
+		g.fillRect(400, 20, player1.getJetpack().getTank().getFuel(), 30);
+		g.setColor(Color.white);
+	}
+	
+	public void reset() {
+		player1.resetLocation();
+		player1.getJetpack().getTank().resetTank();
 	}
 }
