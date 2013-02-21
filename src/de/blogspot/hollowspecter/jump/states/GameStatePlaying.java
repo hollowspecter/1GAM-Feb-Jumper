@@ -3,12 +3,15 @@ package de.blogspot.hollowspecter.jump.states;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import de.blogspot.hollowspecter.jump.maps.Testmap;
+import de.blogspot.hollowspecter.jump.objects.Booster;
 import de.blogspot.hollowspecter.jump.objects.Player;
 import de.blogspot.hollowspecter.jump.other.Constants;
 import de.blogspot.hollowspecter.jump.other.paths;
@@ -17,6 +20,8 @@ public class GameStatePlaying extends BasicGameState {
 	
 	protected Player player1;
 	protected Testmap testmap;
+	protected Image fuel_hud;
+	protected Sound fuel_sound;
 	
 	//HUD
 	private String hud_string;
@@ -29,11 +34,17 @@ public class GameStatePlaying extends BasicGameState {
 	@Override
 	public void init(GameContainer container, StateBasedGame state) throws SlickException
 	{	
-		
 		player1 = new Player(50, 200, paths.IMG_PLAYER_ANIMATION);		
 		player1.init(container);
 		testmap = new Testmap();
 		testmap.init(container);
+		fuel_sound = new Sound("res/sfx/fuel.wav");
+		
+    	for (Booster boost : testmap.getBoosts()) {
+    		boost.init(container);
+    	}
+		
+		fuel_hud = new Image("res/img/fuel.png");
 	}
 
 	@Override
@@ -53,6 +64,11 @@ public class GameStatePlaying extends BasicGameState {
     	else
     		g.translate(-1*(testmap.getMapwidth()-640),0);
     	testmap.render(container, g);
+    	
+    	for (Booster boost : testmap.getBoosts()) {
+    			boost.render(container, g);
+    	}
+    	
     	player1.render(container, g);
     	
     	//Debug HUD
@@ -85,6 +101,16 @@ public class GameStatePlaying extends BasicGameState {
 		player1.setState(Constants.PLAYER_air);
 		boolean dmg_coll = false;
 		
+    	for (Booster boost : testmap.getBoosts()) {
+    		if (!boost.isCollected()) {
+    			if (player1.checkCollisionWith(boost.getShape())) {
+        			fuel_sound.play();
+        			boost.collect();
+        			player1.getJetpack().getTank().gasUp(10);
+        		}
+    		}
+    	}
+		
     	for (Shape box : testmap.getList()) {
     		if (player1.checkCollisionWith(box))
     		{
@@ -109,8 +135,10 @@ public class GameStatePlaying extends BasicGameState {
 	
 	public void fuelBar(GameContainer container, Graphics g) throws SlickException
 	{
+		fuel_hud.draw(378, 20);
 		g.setColor(Color.red);
-		g.fillRect(400, 20, player1.getJetpack().getTank().getFuel(), 30);
+		g.fillRect(400, 20, player1.getJetpack().getTank().getFuel()*2, 20);
+		g.drawRect(399, 19, player1.getJetpack().getTank().getTank_capacity()*2, 21);
 		g.setColor(Color.white);
 	}
 	

@@ -50,7 +50,7 @@ public class Jetpack {
 		}
 		
 		//tank
-		tank = new Fueltank(100,100);
+		tank = new Fueltank(50,50);
 	}
 	
 	public void update(GameContainer container, int delta) throws SlickException

@@ -10,11 +10,14 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 import org.newdawn.slick.tiled.TiledMap;
 
+import de.blogspot.hollowspecter.jump.objects.Booster;
+
 @SuppressWarnings("unused")
 public class Testmap {
 	
 	private TiledMap map;	
 	private ArrayList<Shape> boxes, boxes_above;
+	private ArrayList<Booster> boosts;
 	private float mapwidth;
 
 	public void init(GameContainer container) throws SlickException
@@ -23,6 +26,7 @@ public class Testmap {
 		map = new TiledMap("res/maps/lvl1.tmx");		
 		boxes = new ArrayList<Shape>();
 		boxes_above = new ArrayList<Shape>();
+		boosts = new ArrayList<Booster>();
 		
 		setMapwidth(map.getWidth()*32);
 		
@@ -43,6 +47,11 @@ public class Testmap {
 			{
 				int tileID = map.getTileId(xAxis, yAxis, 2);
 				
+				if (tileID == 6) {
+					Booster boost = new Booster(xAxis*32+6,yAxis*32+5);
+					boosts.add(boost);
+				}
+				
 				if (tileID == 4) {
 					xPos = xAxis*32;
 					yPos = yAxis*32;
@@ -54,10 +63,11 @@ public class Testmap {
 					Shape box = new Rectangle(xPos, yPos, width*32, 32);
 					boxes.add(box);
 					
-					//box aboce
+					//box abovee
 					Shape box2 = new Rectangle(xPos+3, yPos-32, width*32, 32);
 					boxes_above.add(box2);
 				}
+				
 			}
 		}
 
@@ -99,5 +109,13 @@ public class Testmap {
 
 	public void setMapwidth(float mapwidth) {
 		this.mapwidth = mapwidth;
+	}
+
+	public ArrayList<Booster> getBoosts() {
+		return boosts;
+	}
+
+	public void setBoosts(ArrayList<Booster> boosts) {
+		this.boosts = boosts;
 	}
 }
