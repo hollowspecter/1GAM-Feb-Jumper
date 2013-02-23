@@ -4,6 +4,7 @@ import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Music;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.geom.Shape;
@@ -14,6 +15,7 @@ import de.blogspot.hollowspecter.jump.maps.Testmap;
 import de.blogspot.hollowspecter.jump.objects.Booster;
 import de.blogspot.hollowspecter.jump.objects.Player;
 import de.blogspot.hollowspecter.jump.other.Constants;
+import de.blogspot.hollowspecter.jump.other.Score;
 import de.blogspot.hollowspecter.jump.other.paths;
 
 public class GameStatePlaying extends BasicGameState {
@@ -22,6 +24,7 @@ public class GameStatePlaying extends BasicGameState {
 	protected Testmap testmap;
 	protected Image fuel_hud;
 	protected Sound fuel_sound;
+	private Music music;
 	
 	//HUD
 	private String hud_string;
@@ -45,24 +48,38 @@ public class GameStatePlaying extends BasicGameState {
     	}
 		
 		fuel_hud = new Image("res/img/fuel.png");
+		
+		//music handling
+		music = new Music("res/sfx/music/playing.wav");
 	}
 
 	@Override
     public void update(GameContainer container, StateBasedGame state, int delta) throws SlickException
 	{
     	player1.update(container, delta);
-    	collision(container, delta);
+    	collision(container, state, delta);
     	if (player1.getPosY() > 500)
-    		reset();
+    	{
+    		if(player1.getPosX() > testmap.getMapwidth())
+    		{
+    			reset();
+    			state.enterState(GameStates.Win);
+    		}
+    		else
+    		{
+    			reset();
+        		state.enterState(GameStates.GameOver);
+    		}
+    	}
+    	
+    	if (!music.playing())
+    		music.loop();
 	}
 	
     @Override
 	public void render(GameContainer container, StateBasedGame state, Graphics g) throws SlickException
 	{    	
-    	if ((player1.getPosX()+540) < testmap.getMapwidth())
-    		g.translate(-player1.getPosX()+100, 0);
-    	else
-    		g.translate(-1*(testmap.getMapwidth()-640),0);
+    	translate2(container, g);
     	testmap.render(container, g);
     	
     	for (Booster boost : testmap.getBoosts()) {
@@ -72,9 +89,18 @@ public class GameStatePlaying extends BasicGameState {
     	player1.render(container, g);
     	
     	//Debug HUD
-    	HUD(container, g);
-    	fuelBar(container, g);
+//    	HUD(container, g);
+    	realHUD(container, g);
 	}
+    
+    //translate
+    public void translate2(GameContainer container, Graphics g) throws SlickException
+    {
+    	if ((player1.getPosX()+540) < testmap.getMapwidth())
+    		g.translate(-player1.getPosX()+100, 0);
+    	else
+    		g.translate(-1*(testmap.getMapwidth()-640),0);
+    }
 	
 
 	@Override
@@ -82,10 +108,21 @@ public class GameStatePlaying extends BasicGameState {
 		return GameStates.PlayingState;
 	}
 	
+	//REAL HUD
+	public void realHUD(GameContainer container, Graphics g) throws SlickException
+	{
+		if ((player1.getPosX()+540) < testmap.getMapwidth())
+    		g.translate(player1.getPosX(), 0);
+    	else
+    		g.translate(testmap.getMapwidth()-540,0);
+		fuelBar(container, g);
+		g.setColor(Color.black);
+		g.drawString("Score: "+Math.round(player1.getPosX()), -90, 15);
+	}
+	
 	// Debug HUD
 	public void HUD(GameContainer container, Graphics g) throws SlickException
 	{
-    	g.translate(player1.getPosX(), 0);
 		g.setColor(Color.black);
 		g.drawString("posX: "+player1.getPosX(), -90, 0);
 		g.drawString("posY: "+player1.getPosY(), -90, 15);
@@ -95,7 +132,7 @@ public class GameStatePlaying extends BasicGameState {
 		g.setColor(Color.white);
 	}
 	
-	public void collision(GameContainer container, int delta) throws SlickException
+	public void collision(GameContainer container, StateBasedGame state, int delta) throws SlickException
 	{
 		hud_string = "Collision: FALSE";
 		player1.setState(Constants.PLAYER_air);
@@ -104,9 +141,9 @@ public class GameStatePlaying extends BasicGameState {
     	for (Booster boost : testmap.getBoosts()) {
     		if (!boost.isCollected()) {
     			if (player1.checkCollisionWith(boost.getShape())) {
-        			fuel_sound.play();
         			boost.collect();
         			player1.getJetpack().getTank().gasUp(10);
+        			fuel_sound.play();
         		}
     		}
     	}
@@ -130,7 +167,10 @@ public class GameStatePlaying extends BasicGameState {
     	}
     	
     	if (dmg_coll)
+    	{
     		reset();
+    		state.enterState(GameStates.GameOver);
+    	}	
 	}
 	
 	public void fuelBar(GameContainer container, Graphics g) throws SlickException
@@ -143,7 +183,12 @@ public class GameStatePlaying extends BasicGameState {
 	}
 	
 	public void reset() {
+		Score.score = Math.round(player1.getPosX());
+		music.stop();
 		player1.resetLocation();
 		player1.getJetpack().getTank().resetTank();
+		for (Booster boost : testmap.getBoosts()) {
+    		boost.setCollected(false);
+    	}
 	}
 }

@@ -5,8 +5,10 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import de.blogspot.hollowspecter.jump.states.GameStateGameOver;
 import de.blogspot.hollowspecter.jump.states.GameStateMenu;
 import de.blogspot.hollowspecter.jump.states.GameStatePlaying;
+import de.blogspot.hollowspecter.jump.states.GameStateWin;
 
 public class Jump extends StateBasedGame {
 
@@ -18,7 +20,8 @@ public class Jump extends StateBasedGame {
 	public void initStatesList(GameContainer container) throws SlickException {
 		addState(new GameStateMenu());
 		addState(new GameStatePlaying());
-//		addState(new GameOver());
+		addState(new GameStateWin());
+		addState(new GameStateGameOver());
 //		addState(new GameStatePaused());	
 	}
 
@@ -27,7 +30,7 @@ public class Jump extends StateBasedGame {
 			AppGameContainer app = new AppGameContainer(new Jump(), 640, 480, false);
 			app.setVSync(true); //stops tearing, FPS at ~60
 			app.setAlwaysRender(true);
-			app.setShowFPS(true);
+			app.setShowFPS(false);
 			app.start();
 		} catch (SlickException e) {
 			e.printStackTrace();
