@@ -14,6 +14,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import de.blogspot.hollowspecter.jump.maps.Testmap;
 import de.blogspot.hollowspecter.jump.objects.Booster;
 import de.blogspot.hollowspecter.jump.objects.Player;
+import de.blogspot.hollowspecter.jump.objects.Scissor;
 import de.blogspot.hollowspecter.jump.other.Constants;
 import de.blogspot.hollowspecter.jump.other.Score;
 import de.blogspot.hollowspecter.jump.other.paths;
@@ -28,7 +29,6 @@ public class GameStatePlaying extends BasicGameState {
 	
 	//HUD
 	private String hud_string;
-	
 		
 	public GameStatePlaying() {		
 	
@@ -46,6 +46,9 @@ public class GameStatePlaying extends BasicGameState {
     	for (Booster boost : testmap.getBoosts()) {
     		boost.init(container);
     	}
+    	for (Scissor sc : testmap.getScissors()){
+    		sc.init(container);
+    	}
 		
 		fuel_hud = new Image("res/img/fuel.png");
 		
@@ -58,6 +61,11 @@ public class GameStatePlaying extends BasicGameState {
 	{
     	player1.update(container, delta);
     	collision(container, state, delta);
+    	
+    	for (Scissor sc : testmap.getScissors()){
+    		sc.update(container, delta);
+    	}
+    	
     	if (player1.getPosY() > 500)
     	{
     		if(player1.getPosX() > testmap.getMapwidth())
@@ -84,6 +92,9 @@ public class GameStatePlaying extends BasicGameState {
     	
     	for (Booster boost : testmap.getBoosts()) {
     			boost.render(container, g);
+    	}
+    	for (Scissor sc : testmap.getScissors()){
+    		sc.render(container, g);
     	}
     	
     	player1.render(container, g);
@@ -145,6 +156,13 @@ public class GameStatePlaying extends BasicGameState {
         			player1.getJetpack().getTank().gasUp(10);
         			fuel_sound.play();
         		}
+    		}
+    	}
+    	
+    	for (Scissor sc : testmap.getScissors()) {
+    		if (player1.checkCollisionWith(sc.getShape())) {
+    			reset();
+    			state.enterState(GameStates.GameOver);
     		}
     	}
 		
